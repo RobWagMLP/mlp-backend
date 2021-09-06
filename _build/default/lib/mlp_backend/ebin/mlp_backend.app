@@ -1,0 +1,10 @@
+{application,mlp_backend,
+             [{description,"An OTP application"},
+              {vsn,"0.1.0"},
+              {registered,[]},
+              {mod,{mlp_backend_app,[]}},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[mlp_backend_app,mlp_backend_sup]},
+              {licenses,["Apache 2.0"]},
+              {links,[]}]}.

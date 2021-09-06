@@ -1,0 +1,119 @@
+#!/usr/bin/env escript
+%%!
+%-*-Mode:erlang;coding:utf-8;tab-width:4;c-basic-offset:4;indent-tabs-mode:()-*-
+% ex: set ft=erlang fenc=utf-8 sts=4 ts=4 sw=4 et:
+%%%
+%%%------------------------------------------------------------------------
+%%% MIT License
+%%%
+%%% Copyright (c) 2013-2017 Michael Truog <mjtruog at protonmail dot com>
+%%%
+%%% Permission is hereby granted, free of charge, to any person obtaining a
+%%% copy of this software and associated documentation files (the "Software"),
+%%% to deal in the Software without restriction, including without limitation
+%%% the rights to use, copy, modify, merge, publish, distribute, sublicense,
+%%% and/or sell copies of the Software, and to permit persons to whom the
+%%% Software is furnished to do so, subject to the following conditions:
+%%%
+%%% The above copyright notice and this permission notice shall be included in
+%%% all copies or substantial portions of the Software.
+%%%
+%%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+%%% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+%%% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+%%% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+%%% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+%%% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+%%% DEALINGS IN THE SOFTWARE.
+%%%------------------------------------------------------------------------
+
+-author('mjtruog at protonmail dot com').
+
+-mode(compile).
+
+main(_) ->
+    {ok,
+     [{sys, _} = RelToolConfig,
+      {target_dir, TargetDir},
+      {overlay, OverlayConfig}]} = file:consult("reltool.config"),
+    {ok, Spec} = reltool:get_target_spec([RelToolConfig]),
+    case file:make_dir(TargetDir) of
+        ok ->
+            ok;
+        {error, eexist} ->
+            io:format("release already exists? (~p)~n", [TargetDir]),
+            exit_code(1)
+    end,
+    ok = reltool:eval_target_spec(Spec, code:root_dir(), TargetDir),
+    ok = process_overlay(RelToolConfig, TargetDir, OverlayConfig),
+    exit_code(0).
+
+shell(Command, Arguments) ->
+    Shell = erlang:open_port({spawn_executable, "/bin/sh"},
+                             [{args, ["-"]},
+                              stream, binary, stderr_to_stdout, exit_status]),
+    Exec = io_lib:format(Command, Arguments),
+    true = erlang:port_command(Shell, ["exec ", Exec, "\n"]),
+    case shell_output(Shell, []) of
+        {0, _} ->
+            ok;
+        {Status, Output} ->
+            io:format("~s\"~s\" failed! exit ~w~n", [Output, Exec, Status]),
+            error
+    end.
+
+shell_output(Shell, Output) ->
+    receive
+        {Shell, {data, Data}} ->
+            shell_output(Shell, [Data | Output]);
+        {Shell, {exit_status, Status}} ->
+            {Status, lists:reverse(Output)}
+    end.
+
+boot_rel_vsn({sys, Config} = _RelToolConfig) ->
+    {rel, _Name, Ver, _} = proplists:lookup(rel, Config),
+    Ver.
+
+%% minimal parsing for handling mustache syntax
+mustache(Body, Context) ->
+    mustache(Body, "", Context).
+mustache([], Result, _Context) ->
+    lists:reverse(Result);
+mustache([${, ${ | KeyStr], Result, Context) ->
+    mustache_key(KeyStr, "", Result, Context);
+mustache([C | Rest], Result, Context) ->
+    mustache(Rest, [C | Result], Context).
+mustache_key([$}, $} | Rest], KeyStr, Result, Context) ->
+    Key = erlang:list_to_existing_atom(lists:reverse(KeyStr)),
+    {ok, Value} = dict:find(Key, Context),
+    mustache(Rest, lists:reverse(Value) ++ Result, Context);
+mustache_key([C | Rest], KeyStr, Result, Context) ->
+    mustache_key(Rest, [C | KeyStr], Result, Context).
+    
+%% support minimal overlay based on rebar overlays
+process_overlay(RelToolConfig, TargetDir, OverlayConfig) ->
+    BootRelVsn = boot_rel_vsn(RelToolConfig),
+    OverlayVars =
+        dict:from_list([{erts_vsn, "erts-" ++ erlang:system_info(version)},
+                        {rel_vsn, BootRelVsn},
+                        {target_dir, TargetDir},
+                        {hostname, net_adm:localhost()}]),
+    {ok, BaseDir} = file:get_cwd(),
+    execute_overlay(OverlayConfig, OverlayVars, BaseDir, TargetDir).
+
+execute_overlay([], _Vars, _BaseDir, _TargetDir) ->
+    ok;
+execute_overlay([{mkdir, Out} | Rest], Vars, BaseDir, TargetDir) ->
+    OutDir = mustache(filename:join(TargetDir, Out), Vars),
+    ok = shell("mkdir -p \"~s\"", [OutDir]),
+    execute_overlay(Rest, Vars, BaseDir, TargetDir);
+execute_overlay([{copy, In, Out} | Rest], Vars, BaseDir, TargetDir) ->
+    InFile = mustache(filename:join(BaseDir, In), Vars),
+    OutFile = mustache(filename:join(TargetDir, Out), Vars),
+    true = filelib:is_file(InFile),
+    ok = shell("cp -R \"~s\" \"~s\"", [InFile, OutFile]),
+    execute_overlay(Rest, Vars, BaseDir, TargetDir).
+
+exit_code(ExitCode) ->
+    erlang:halt(ExitCode, [{flush, true}]).
+

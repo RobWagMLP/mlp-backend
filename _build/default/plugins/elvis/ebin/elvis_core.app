@@ -1,0 +1,12 @@
+{application,elvis_core,
+             [{pkg_name,elvis_core},
+              {description,"Core library for the Erlang style reviewer"},
+              {vsn,"0.7.0"},
+              {applications,[kernel,stdlib,zipper,katana_code]},
+              {modules,[elvis_code,elvis_config,elvis_core,elvis_file,
+                        elvis_project,elvis_result,elvis_rulesets,elvis_style,
+                        elvis_task,elvis_utils]},
+              {registered,[]},
+              {licenses,["Apache 2.0"]},
+              {links,[{"Github","https://github.com/inaka/elvis_core"}]},
+              {build_tools,["rebar3"]}]}.

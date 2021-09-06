@@ -1,0 +1,10 @@
+{application,abnfc,
+             [{description,"ABNF parser generator"},
+              {vsn,"0.5.2"},
+              {modules,[abnfc,abnfc_ast,abnfc_gen,abnfc_rfc4234,
+                        abnfc_rfc4234ext,rfc4234_core,rfc4234ext_core]},
+              {applications,[kernel,stdlib]},
+              {registered,[]},
+              {env,[]},
+              {licenses,["Unknown"]},
+              {links,[{"Github","https://github.com/rbkmoney/abnfc.git"}]}]}.

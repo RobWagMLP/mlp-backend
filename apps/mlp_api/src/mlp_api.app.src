@@ -1,0 +1,19 @@
+{application, mlp_api, [
+    {description, "Interface to the mlp_backend Plattform"},
+    {vsn, "1.0.0"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib,
+        ssl,
+        inets,
+        jsx,
+        jesse,
+        cowboy
+    ]},
+    {env, [
+    ]},
+    {modules, []},
+    {licenses, []},
+    {links, []}
+]}.

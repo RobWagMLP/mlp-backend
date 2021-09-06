@@ -1,0 +1,13 @@
+{application,mlp_api,
+             [{description,"Interface to the mlp_backend Plattform"},
+              {vsn,"1.0.0"},
+              {registered,[]},
+              {applications,[kernel,stdlib,ssl,inets,jsx,jesse,cowboy]},
+              {env,[]},
+              {modules,[mlp_api_api,mlp_api_auth,
+                        mlp_api_default_logic_handler,mlp_api_logic_handler,
+                        mlp_api_maintenance_handler,
+                        mlp_api_registration_handler,mlp_api_router,
+                        mlp_api_server,mlp_api_utils]},
+              {licenses,[]},
+              {links,[]}]}.

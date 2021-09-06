@@ -1,0 +1,137 @@
+#!/usr/bin/env escript
+%%!
+%-*-Mode:erlang;coding:utf-8;tab-width:4;c-basic-offset:4;indent-tabs-mode:()-*-
+% ex: set ft=erlang fenc=utf-8 sts=4 ts=4 sw=4 et nomod:
+%%%------------------------------------------------------------------------
+%%% @doc
+%%% ==Elixir-to-Erlang converter==
+%%% @end
+%%%
+%%% MIT License
+%%%
+%%% Copyright (c) 2016-2017 Michael Truog <mjtruog at protonmail dot com>
+%%%
+%%% Permission is hereby granted, free of charge, to any person obtaining a
+%%% copy of this software and associated documentation files (the "Software"),
+%%% to deal in the Software without restriction, including without limitation
+%%% the rights to use, copy, modify, merge, publish, distribute, sublicense,
+%%% and/or sell copies of the Software, and to permit persons to whom the
+%%% Software is furnished to do so, subject to the following conditions:
+%%%
+%%% The above copyright notice and this permission notice shall be included in
+%%% all copies or substantial portions of the Software.
+%%%
+%%% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+%%% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+%%% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+%%% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+%%% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+%%% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+%%% DEALINGS IN THE SOFTWARE.
+%%%
+%%% @version 1.7.1 {@date} {@time}
+%%%------------------------------------------------------------------------
+
+-module(ex2erl).
+-vsn("1.7.1").
+
+-mode(compile).
+
+-export([main/1]).
+
+-record(state,
+        {
+            file_path_elixir = undefined :: undefined | string()
+        }).
+
+% erl_parse tree nodes represented as records
+-record('var',
+        {
+            anno :: erl_anno:anno(),
+            name :: atom()
+        }).
+
+-spec main(Arguments :: list(string())) ->
+    no_return().
+
+main(Arguments) ->
+    #state{file_path_elixir = FilePathElixir} = main_arguments(Arguments),
+    ElixirRoot = filename:join(code:root_dir(), "../elixir"),
+    true = code:add_path(filename:join(ElixirRoot,
+                                       "lib/elixir/ebin")),
+    {ok, _} = application:ensure_all_started(elixir),
+
+    FileDirectoryElixir = filename:dirname(FilePathElixir),
+    Modules = 'Elixir.Kernel.ParallelCompiler':
+              files_to_path([erlang:list_to_binary(FilePathElixir)],
+                            erlang:list_to_binary(FileDirectoryElixir),
+                            []),
+    DirectoryIn = FileDirectoryElixir,
+    DirectoryOut = FileDirectoryElixir,
+    FilePaths = [convert(Module, DirectoryIn, DirectoryOut)
+                 || Module <- Modules],
+    io:format("~p~n", [FilePaths]),
+    exit_code(0).
+
+%%%------------------------------------------------------------------------
+%%% Private functions
+%%%------------------------------------------------------------------------
+
+main_arguments(Arguments) ->
+    main_arguments(Arguments, #state{}).
+
+main_arguments([], State) ->
+    State;
+main_arguments(["-h" | _], _) ->
+    io:format(help(), [filename:basename(?FILE)]),
+    exit_code(0);
+main_arguments(["-" ++ InvalidParameter | _], _) ->
+    erlang:error({invalid_parameter, InvalidParameter});
+main_arguments([FilePathElixir | Arguments], State) ->
+    main_arguments(Arguments, State#state{file_path_elixir = FilePathElixir}).
+
+variable_erlang(#'var'{name = Name} = Variable) ->
+    NewName = case erlang:atom_to_list(Name) of
+        [$_ | Suffix] ->
+            erlang:list_to_atom([$_, $E | Suffix]);
+        Suffix ->
+            erlang:list_to_atom([$E | Suffix])
+    end,
+    Variable#'var'{name = NewName}.
+
+convert(Module, DirectoryIn, DirectoryOut) ->
+    ModuleName = erlang:atom_to_list(Module),
+    FilePathBeam = filename:join(DirectoryIn,
+                                 ModuleName ++ ".beam"),
+    FilePathErlang = filename:join(DirectoryOut,
+                                   ModuleName ++ ".erl"),
+
+    % as described at http://erlang.org/doc/man/beam_lib.html
+    % with minor modifications to make it valid Erlang source code
+    {ok,
+     {_, [{abstract_code,
+           {_, Forms}}]}} = beam_lib:chunks(FilePathBeam,
+                                            [abstract_code]),
+    SyntaxTree = erl_syntax_lib:map(fun(TreeNode) ->
+        case TreeNode of
+            #'var'{} = Variable ->
+                variable_erlang(Variable);
+            _ ->
+                TreeNode
+        end
+    end, erl_syntax:form_list(Forms)),
+    ok = file:write_file(FilePathErlang, erl_prettypr:format(SyntaxTree)),
+
+    % cleanup
+    ok = file:delete(FilePathBeam),
+    FilePathErlang.
+
+exit_code(ExitCode) when is_integer(ExitCode) ->
+    erlang:halt(ExitCode, [{flush, true}]).
+
+help() ->
+"Usage ~s FILE.ex
+
+  -h              List available command line flags
+".
+
