@@ -1,0 +1,215 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "contact" : {
+      "name" : "Robert Wagner"
+    },
+    "description" : "Interface to the mlp_backend Plattform",
+    "title" : "mlp_backend",
+    "version" : "0.0.2"
+  },
+  "servers" : [ {
+    "url" : "/mlp_backend"
+  }, {
+    "url" : "https://ebaas-core.{environment}ndpay.de/mlp_backend",
+    "variables" : {
+      "environment" : {
+        "default" : "dit.",
+        "enum" : [ "dit.", "dev.", "staging.", "" ]
+      }
+    }
+  }, {
+    "url" : "{url}",
+    "variables" : {
+      "url" : {
+        "default" : "http://localhost"
+      }
+    }
+  } ],
+  "security" : [ {
+    "basicAuth" : [ ]
+  }, {
+    "access_token" : [ ]
+  }, {
+    "oidc_header" : [ ]
+  }, {
+    "api_key" : [ ]
+  } ],
+  "tags" : [ {
+    "description" : "initial user signup",
+    "name" : "registration"
+  }, {
+    "description" : "maintenance of user master data",
+    "name" : "maintenance"
+  } ],
+  "paths" : {
+    "/user" : {
+      "get" : {
+        "description" : "get the persons data using current credentials",
+        "operationId" : "person_get",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            },
+            "description" : "person found"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "unexpected error"
+          }
+        },
+        "security" : [ ],
+        "summary" : "get person data",
+        "tags" : [ "maintenance" ],
+        "x-user_role" : [ "customer" ]
+      }
+    },
+    "/user/signup_user" : {
+      "post" : {
+        "description" : "create a person using name, given name in the body and email address/password in basic auth header. this email address will receive a mail to activate the account.",
+        "operationId" : "person_create_third_person_post",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewUser"
+              }
+            }
+          },
+          "description" : "Address to add",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserId"
+                }
+              }
+            },
+            "description" : "person created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "unexpected error"
+          },
+          "409" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "person already created"
+          }
+        },
+        "security" : [ ],
+        "summary" : "create a person",
+        "tags" : [ "registration" ],
+        "x-user_role" : [ "admin", "user" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "NewUser" : {
+        "example" : {
+          "email_address:" : "email_address:",
+          "username" : "username"
+        },
+        "properties" : {
+          "email_address:" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "UserId" : {
+        "type" : "integer"
+      },
+      "Error" : {
+        "properties" : {
+          "error_code" : {
+            "type" : "integer"
+          },
+          "error_message" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "User" : {
+        "example" : {
+          "email_address" : "email_address",
+          "user_id" : 0,
+          "username" : "username"
+        },
+        "properties" : {
+          "user_id" : {
+            "type" : "integer"
+          },
+          "username" : {
+            "type" : "string"
+          },
+          "email_address" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      }
+    },
+    "securitySchemes" : {
+      "basicAuth" : {
+        "description" : "email address and password",
+        "scheme" : "basic",
+        "type" : "http"
+      },
+      "biometryAuth" : {
+        "description" : "base64 encoded biometry template",
+        "scheme" : "bearer",
+        "type" : "http"
+      },
+      "qrAuth" : {
+        "in" : "header",
+        "name" : "qr",
+        "type" : "apiKey"
+      },
+      "access_token" : {
+        "description" : "the access_token received from the idp",
+        "scheme" : "bearer",
+        "type" : "http"
+      },
+      "oidc_header" : {
+        "in" : "header",
+        "name" : "x-amzn-oidc-data",
+        "type" : "apiKey"
+      },
+      "api_key" : {
+        "scheme" : "bearer",
+        "type" : "http"
+      }
+    }
+  }
+}
