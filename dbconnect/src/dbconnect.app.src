@@ -1,14 +1,16 @@
-{application, dbconnect,
- [{description, "An OTP library"},
-  {vsn, "0.1.0"},
-  {registered, []},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
-  {env,[]},
-  {modules, []},
-
-  {licenses, ["Apache 2.0"]},
-  {links, []}
- ]}.
+{application, dbconnection,
+    [{description, "db-connect-enginge"},
+        {vsn,"0.1.0"},
+        {applications,
+            [kernel,
+             stdlib,
+             ssl,
+             epgsql,
+             poolboy,
+             varpool
+            ]},
+        {registered, [dbconnection,dbconnection_worker]}, %
+        {mod, {dbconnection, []}},
+        {modules, []},
+        {registered, [rest_server]}
+    ]}.

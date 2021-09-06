@@ -20,6 +20,13 @@ authorize_api_key(_, _) -> {true, #{}}.
 ) ->
     {Status :: cowboy:http_status(), Headers :: cowboy:http_headers(), Body :: jsx:json_term()}.
 
+
+
+
+handle_request('PersonGet', #{}, Context) ->
+    dbconnection:call_proc(db,sp_access_key_get_active,#{access_key => Access_Key}, plain)
+    logger:info('Hello');
+
 handle_request(OperationID, Req, Context) ->
     error_logger:error_msg(
         "Got not implemented request to process: ~p~n",
