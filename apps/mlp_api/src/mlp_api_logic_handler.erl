@@ -35,3 +35,4 @@ handle_request(Handler, OperationID, Req, Context) ->
     Result :: false | {true, context()}.
 authorize_api_key(Handler, OperationID, ApiKey) ->
     Handler:authorize_api_key(OperationID, ApiKey).
+

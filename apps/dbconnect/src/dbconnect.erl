@@ -55,16 +55,16 @@ stop(_State) ->
 
 
 init([]) ->
-    {ok, Pools} = application:get_env(dbconnection, pools),
+    {ok, Pools} = application:get_env(dbconnect, pools),
     PoolSpecs = lists:map(fun({Name, SizeArgs, WorkerArgs}) ->
                               PoolArgs = [{name, {local, Name}},
-                              {worker_module, dbconnection_worker}] ++ SizeArgs,
+                              {worker_module, dbconnect_worker}] ++ SizeArgs,
                               poolboy:child_spec(Name, PoolArgs, WorkerArgs)
                           end, Pools),
     %PoolSpecs2 = lists:map(fun(Liste) -> setelement(3,Liste,temporary) end,PoolSpecs),
     
-    {ok, {#{strategy  =>one_for_one,
-            intensity => 10,
+    {ok, {#{strategy   =>one_for_one,
+            intensity  => 10,
             period     => 10}, PoolSpecs}}.
 
 squery(PoolName, Sql) ->

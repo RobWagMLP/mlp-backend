@@ -15,12 +15,13 @@
 -spec request_params(OperationID :: operation_id()) -> [Param :: request_param()].
 
 
-request_params('PersonGet') ->
+request_params('UserGet') ->
     [
+        'user_name'
     ];
 
 
-request_params('PersonCreateThirdPersonPost') ->
+request_params('UserCreate') ->
     [
         'NewUser'
     ];
@@ -55,8 +56,17 @@ request_params(_) ->
 
 
 
+request_param_info('UserGet', 'user_name') ->
+    #{
+        source => qs_val  ,
+        rules => [
+            {type, 'binary'},
+            required
+        ]
+    };
 
-request_param_info('PersonCreateThirdPersonPost', 'NewUser') ->
+
+request_param_info('UserCreate', 'NewUser') ->
     #{
         source =>   body,
         rules => [
@@ -112,17 +122,17 @@ populate_request_param(OperationID, Name, Req0, ValidatorState) ->
 ) -> ok | no_return().
 
 
-validate_response('PersonGet', 200, Body, ValidatorState) ->
+validate_response('UserGet', 200, Body, ValidatorState) ->
     validate_response_body('User', 'User', Body, ValidatorState);
-validate_response('PersonGet', 400, Body, ValidatorState) ->
+validate_response('UserGet', 400, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
 
 
-validate_response('PersonCreateThirdPersonPost', 200, Body, ValidatorState) ->
+validate_response('UserCreate', 200, Body, ValidatorState) ->
     validate_response_body('integer', 'integer', Body, ValidatorState);
-validate_response('PersonCreateThirdPersonPost', 400, Body, ValidatorState) ->
+validate_response('UserCreate', 400, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
-validate_response('PersonCreateThirdPersonPost', 409, Body, ValidatorState) ->
+validate_response('UserCreate', 409, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
 
 

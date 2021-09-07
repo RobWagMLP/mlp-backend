@@ -49,7 +49,7 @@ init(Req, {Operations, LogicHandler, ValidatorState}) ->
 allowed_methods(
     Req,
     State = #state{
-        operation_id = 'PersonGet'
+        operation_id = 'UserGet'
     }
 ) ->
     {[<<"GET">>], Req, State};
@@ -84,7 +84,7 @@ content_types_accepted(Req, State) ->
 valid_content_headers(
     Req0,
     State = #state{
-        operation_id = 'PersonGet'
+        operation_id = 'UserGet'
     }
 ) ->
     Headers = [],

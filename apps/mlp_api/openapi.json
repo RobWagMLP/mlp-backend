@@ -13,7 +13,7 @@
       "url": "/mlp_backend"
     },
     {
-      "url": "https://ebaas-core.{environment}ndpay.de/mlp_backend",
+      "url": "https://test-url.com/mlp_backend",
       "variables": {
         "environment": {
           "enum": [
@@ -48,9 +48,19 @@
   "paths": {
     "/user": {
       "get": {
+        "parameters": [
+          {
+            "name": "user_name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "summary": "get person data",
         "description": "get the persons data using current credentials",
-        "operationId": "person_get",
+        "operationId": "user_get",
         "x-user_role": [
           "customer"
         ],
@@ -86,7 +96,7 @@
       "post": {
         "summary": "create a person",
         "description": "create a person using name, given name in the body and email address/password in basic auth header. this email address will receive a mail to activate the account.",
-        "operationId": "person_create_third_person_post",
+        "operationId": "user_create",
         "x-user_role": [
           "admin",
           "user"
@@ -219,7 +229,7 @@
           "user_id": {
             "type": "integer"
           },
-          "username": {
+          "user_name": {
             "type": "string"
           },
           "email_address": {

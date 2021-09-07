@@ -1,6 +1,6 @@
-select sp_drop_function('R__sp_create_user');
+select sp_drop_function('sp_create_user');
 
-create or replace function R__sp_create_user(
+create or replace function sp_create_user(
            user_name         varchar      ,
            email_address     varchar(255) 
 )

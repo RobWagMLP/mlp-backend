@@ -55,12 +55,12 @@ group_paths() ->
 
 get_operations() ->
     #{ 
-        'PersonGet' => #{
+        'UserGet' => #{
             path => "/mlp_backend/user",
             method => <<"GET">>,
             handler => 'mlp_api_maintenance_handler'
         },
-        'PersonCreateThirdPersonPost' => #{
+        'UserCreate' => #{
             path => "/mlp_backend/user/signup_user",
             method => <<"POST">>,
             handler => 'mlp_api_registration_handler'

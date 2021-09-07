@@ -19,9 +19,11 @@ authorize_api_key(_, _) -> {true, #{}}.
 
 
 
-handle_request('PersonGet', #{}, Context) ->
-    dbconnect:call_proc(db,sp_access_key_get_active,#{}, jsonagg),
-    logger:info('Hello');
+handle_request('UserGet', Context, #{user_name := UserName}) ->
+    case dbconnect:call_sp(db,sp_get_user,#{user_name => UserName}, true) of
+        {ok, <<"result">>, Res} -> {200, #{}, jsx:decode(Res)};
+         _                      -> {400, #{}, #{}}
+        end;
 
 handle_request(OperationID, Req, Context) ->
     error_logger:error_msg(
