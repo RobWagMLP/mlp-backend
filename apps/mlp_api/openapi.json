@@ -210,7 +210,12 @@
         }
       },
       "UserId": {
-        "type": "integer"
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer"
+          }
+        }
       },
       "Error": {
         "type": "object",

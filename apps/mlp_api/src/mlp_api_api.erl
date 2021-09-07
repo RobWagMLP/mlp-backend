@@ -129,7 +129,7 @@ validate_response('UserGet', 400, Body, ValidatorState) ->
 
 
 validate_response('UserCreate', 200, Body, ValidatorState) ->
-    validate_response_body('integer', 'integer', Body, ValidatorState);
+    validate_response_body('UserId', 'UserId', Body, ValidatorState);
 validate_response('UserCreate', 400, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
 validate_response('UserCreate', 409, Body, ValidatorState) ->

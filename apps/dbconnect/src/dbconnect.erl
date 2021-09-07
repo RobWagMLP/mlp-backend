@@ -94,7 +94,7 @@ call_procedure(PoolName,SpName,SpParams,AsJson) ->
     %diese art der parametrisierung ist murks, müssen wir bei gelegenheit schöner machen
     case AsJson of
       false                 -> QueryString = io_lib:format("select a.* from ~s(~s) as a",[SpName,Params]);
-        true                  -> QueryString = io_lib:format("select to_json(a) as result from ~s(~s) as a",[SpName,Params]);
+        true                -> QueryString = io_lib:format("select to_json(a) as result from ~s(~s) as a",[SpName,Params]);
       jsonagg               -> QueryString = io_lib:format("select coalesce(json_agg(a),'[]') as result from ~s(~s) as a",[SpName,Params]);
       [true,strip_nulls]    -> QueryString = io_lib:format("select coalesce(json_strip_nulls(to_json(a)),'{}') as result from ~s(~s) as a",[SpName,Params]);
       [jsonagg,strip_nulls] -> QueryString = io_lib:format("select coalesce(json_strip_nulls(json_agg(a)),'[]') as result from ~s(~s) as a",[SpName,Params])

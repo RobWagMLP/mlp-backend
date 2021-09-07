@@ -20,8 +20,16 @@ authorize_api_key(_, _) -> {true, #{}}.
 
 
 handle_request('UserGet', Context, #{user_name := UserName}) ->
-    case dbconnect:call_sp(db,sp_get_user,#{user_name => UserName}, true) of
+    case dbconnect:call_sp(db,sp_get_user,#{user_name => UserName}, [true, strip_nulls]) of
         {ok, <<"result">>, Res} -> {200, #{}, jsx:decode(Res)};
+         _                      -> {400, #{}, #{}}
+        end;
+
+
+handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
+    error_logger:error_msg("HANS"),
+    case dbconnect:call_sp(db,sp_create_user, Params, true) of
+        {ok, <<"result">>, Res} -> {200, #{}, #{ user_id => binary_to_integer(Res) } };
          _                      -> {400, #{}, #{}}
         end;
 
@@ -31,3 +39,4 @@ handle_request(OperationID, Req, Context) ->
         [{OperationID, Req, Context}]
     ),
     {501, #{}, #{}}.
+

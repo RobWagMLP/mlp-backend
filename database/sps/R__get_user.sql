@@ -15,7 +15,7 @@ declare
 begin
    select u.user_name    ,
           u.email_address,
-          u.user__id   
+          u.user_id   
     into  v_user_name    ,
           v_email_address,
           v_user_id 

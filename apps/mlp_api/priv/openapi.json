@@ -157,7 +157,15 @@
         "type" : "object"
       },
       "UserId" : {
-        "type" : "integer"
+        "example" : {
+          "user_id" : 0
+        },
+        "properties" : {
+          "user_id" : {
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
       },
       "Error" : {
         "properties" : {
