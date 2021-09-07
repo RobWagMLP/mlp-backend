@@ -3,14 +3,14 @@ Database: jdbc:postgresql:mlp_store (PostgreSQL 12.8)
 ----------------------------------------
 Flyway Teams features are enabled by default for the next 28 days. Learn more at https://rd.gt/3A4IWym
 ----------------------------------------
-Successfully validated 8 migrations (execution time 00:00.020s)
-Current version of schema "public": 1.0.0.0001
+Successfully validated 11 migrations (execution time 00:00.018s)
+Current version of schema "public": 1.0.0.0002
 Migrating schema "public" with repeatable migration "get user"
-DB: 2021-09-07 11:54:40.048506+02,DROP FUNCTION public.sp_get_user(INOUT user_name character varying, OUT email_address character varying, OUT user_id bigint)
+DB: 2021-09-07 12:58:17.975557+02,DROP FUNCTION public.sp_get_user(INOUT user_name character varying, OUT email_address character varying, OUT user_id bigint)
 +------------------+
 | sp_drop_function |
 +------------------+
 |                  |
 +------------------+
 
-Successfully applied 1 migration to schema "public" (execution time 00:00.044s)
+Successfully applied 1 migration to schema "public" (execution time 00:00.057s)

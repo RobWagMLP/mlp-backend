@@ -15,11 +15,11 @@ declare
 begin
    select u.user_name    ,
           u.email_address,
-          u.user_create_id   
+          u.user__id   
     into  v_user_name    ,
           v_email_address,
           v_user_id 
-    from  user_create u
+    from  user_valid u
     where u.user_name = v_user_name; 
 
 end;
