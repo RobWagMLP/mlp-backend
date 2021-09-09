@@ -1,5 +1,6 @@
 {"1.1.0",
-[{<<"bcrypt">>,{pkg,<<"bcrypt">>,<<"1.0.2">>},0},
+[{<<"bbmustache">>,{pkg,<<"bbmustache">>,<<"1.5.0">>},0},
+ {<<"bcrypt">>,{pkg,<<"bcrypt">>,<<"1.0.2">>},0},
  {<<"certifi">>,{pkg,<<"certifi">>,<<"2.5.1">>},1},
  {<<"cowboy">>,
   {git,"https://github.com/ninenines/cowboy.git",
@@ -16,6 +17,7 @@
  {<<"email_validator">>,{pkg,<<"email_validator">>,<<"1.0.0">>},0},
  {<<"epgsql">>,{pkg,<<"epgsql">>,<<"3.4.0">>},0},
  {<<"erlang_base62">>,{pkg,<<"erlang_base62">>,<<"1.0.0">>},0},
+ {<<"gen_smtp">>,{pkg,<<"gen_smtp">>,<<"0.15.0">>},0},
  {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
  {<<"hackney">>,{pkg,<<"hackney">>,<<"1.15.2">>},0},
  {<<"idna">>,{pkg,<<"idna">>,<<"6.0.0">>},1},
@@ -54,6 +56,7 @@
        {ref,"31716adecb4b405b1f5ef80b9f3fa50f39b26af8"}},
   0},
  {<<"ssl_verify_fun">>,{pkg,<<"ssl_verify_fun">>,<<"1.1.5">>},1},
+ {<<"syn">>,{pkg,<<"syn">>,<<"1.6.2">>},0},
  {<<"unicode_util_compat">>,{pkg,<<"unicode_util_compat">>,<<"0.4.1">>},2},
  {<<"uuid">>,
   {git,"git://github.com/okeuday/uuid.git",
@@ -62,11 +65,13 @@
  {<<"varpool">>,{pkg,<<"varpool">>,<<"1.7.3">>},0}]}.
 [
 {pkg_hash,[
+ {<<"bbmustache">>, <<"8CFDE0602E90A4057E161BF5288ADE854B4E511E2E8924966A8438730E958381">>},
  {<<"bcrypt">>, <<"6735F66D3A7309AF166CE660161009B7D9B9216508B8B2E6A0A9090AF35CB757">>},
  {<<"certifi">>, <<"867CE347F7C7D78563450A18A6A28A8090331E77FA02380B4A21962A65D36EE5">>},
  {<<"email_validator">>, <<"3F942B6AF1A309165B9399C71D5251EF5933774CEBC59EEAF18A7D9C4A8FA092">>},
  {<<"epgsql">>, <<"39D473B83D74329A88F8FB1F99AD24C7A2329FD753957C488808CB7C0FC8164E">>},
  {<<"erlang_base62">>, <<"B2691FED07DECFFB6836C223FC3E03446935F62455CC52FAC3A476354DF2A526">>},
+ {<<"gen_smtp">>, <<"9F51960C17769B26833B50DF0B96123605A8024738B62DB747FECE14EB2FBFCC">>},
  {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
  {<<"hackney">>, <<"07E33C794F8F8964EE86CEBEC1A8ED88DB5070E52E904B8F12209773C1036085">>},
  {<<"idna">>, <<"689C46CBCDF3524C44D5F3DDE8001F364CD7608A99556D8FBD8239A5798D4C10">>},
@@ -81,6 +86,7 @@
  {<<"recon">>, <<"2BCAD0CF621FB277CABBB6413159CD3AA30265C2DEE42C968697988B30108604">>},
  {<<"reltool_util">>, <<"D73798372AEBB46ADF75DABF02196725C80ADAF37A5B9335147801F366E65EA8">>},
  {<<"ssl_verify_fun">>, <<"6EAF7AD16CB568BB01753DBBD7A95FF8B91C7979482B95F38443FE2C8852A79B">>},
+ {<<"syn">>, <<"79D9802DA39AFDED0597950A4CC37367A7DBEF917F68A4BEBAE5D15A8DA8611E">>},
  {<<"unicode_util_compat">>, <<"D869E4C68901DD9531385BB0C8C40444EBF624E60B6962D95952775CAC5E90CD">>},
  {<<"varpool">>, <<"85EBE2C8AFAFA771424ACAD045D6C56C5B513D329554CE1BBB268A6B93E547D1">>}]}
 ].
