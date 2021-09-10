@@ -97,10 +97,6 @@
         "summary": "create a person",
         "description": "create a person using name, given name in the body and email address/password in basic auth header. this email address will receive a mail to activate the account.",
         "operationId": "user_create",
-        "x-user_role": [
-          "admin",
-          "user"
-        ],
         "tags": [
           "registration"
         ],
@@ -126,6 +122,53 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "person already created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/verify": {
+      "post": {
+        "summary": "verify a person",
+        "description": "create a person using name, given name in the body and email address/password in basic auth header. this email address will receive a mail to activate the account.",
+        "operationId": "user_verify",
+        "tags": [
+          "registration"
+        ],
+        "security": [],
+        "requestBody": {
+          "description": "verify a token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserVerify"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "person verified"
           },
           "400": {
             "description": "unexpected error",
@@ -240,6 +283,12 @@
           "email_address": {
             "type": "string"
           }
+        }
+      },
+      "UserVerify": {
+        "type": "object",
+        "properties": {
+          "verification_code": null
         }
       }
     }
