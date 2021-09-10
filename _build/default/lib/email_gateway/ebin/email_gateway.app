@@ -4,6 +4,6 @@
               {registered,[]},
               {applications,[kernel,stdlib]},
               {env,[]},
-              {modules,[email_gateway]},
+              {modules,[email_gateway,email_worker]},
               {licenses,["Apache 2.0"]},
               {links,[]}]}.

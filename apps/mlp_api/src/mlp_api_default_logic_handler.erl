@@ -28,11 +28,11 @@ handle_request('UserGet', Context, #{user_name := UserName}) ->
 
 handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
     case dbconnect:call_sp(db,sp_create_user, Params, true) of
-        {ok, <<"result">>, Res } -> ParsedRes = jsx:decode(Res), 
+        {ok, <<"result">>, Res } -> ParsedRes = jsx:decode(Res, [return_maps]), 
                                     UserID = maps:get(<<"user_id">>, ParsedRes),
                                     Token = maps:get(<<"verification_code">>, ParsedRes),
-                                    email_worker:build_validation_template(maps:get(<<"user_name">>, Params), maps:get(<<"email_address">>, Params), "MLPFun", Token),
-                                   {200, #{}, #{ user_id => UserID } };
+                                    email_worker:build_validation_template(maps:get(<<"user_name">>, Params), maps:get(<<"email_address">>, Params), Token),
+                                    {200, #{}, #{ user_id => UserID } };
          _                      -> {400, #{}, #{}}
         end;
 

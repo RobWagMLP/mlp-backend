@@ -5,6 +5,7 @@
   {mod, {mlp_backend_app, []}},
   {applications,
    [kernel,
+    mlp_api,
     stdlib
    ]},
   {env,[]},

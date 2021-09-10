@@ -4,6 +4,5 @@ psql -p 5432 -h localhost -U postgres -A -tc "SELECT 1 FROM pg_database     WHER
 
 sh dbdeploy.sh
 
-rebar3 shell --sname=startshell
-
+rebar3 shell
 
