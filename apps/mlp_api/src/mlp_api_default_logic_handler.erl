@@ -25,6 +25,12 @@ handle_request('UserGet', Context, #{user_name := UserName}) ->
          _                      -> {400, #{}, #{}}
         end;
 
+handle_request('UserVerify', Context, #{'UserVerify' := Params}) ->
+    case dbconnect:call_sp(db,sp_user_verify,Params, [true ]) of
+        {ok, <<"result">>, _} -> {200, #{}, #{result => ok}};
+        Else                    -> {400, #{}, Else       }
+        end;
+
 
 handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
     case dbconnect:call_sp(db,sp_create_user, Params, true) of

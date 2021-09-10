@@ -26,6 +26,11 @@ request_params('UserCreate') ->
         'NewUser'
     ];
 
+request_params('UserVerify') ->
+    [
+        'UserVerify'
+    ];
+
 request_params(_) ->
     error(unknown_operation).
 
@@ -67,6 +72,15 @@ request_param_info('UserGet', 'user_name') ->
 
 
 request_param_info('UserCreate', 'NewUser') ->
+    #{
+        source =>   body,
+        rules => [
+            schema,
+            required
+        ]
+    };
+
+request_param_info('UserVerify', 'UserVerify') ->
     #{
         source =>   body,
         rules => [
@@ -133,6 +147,13 @@ validate_response('UserCreate', 200, Body, ValidatorState) ->
 validate_response('UserCreate', 400, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
 validate_response('UserCreate', 409, Body, ValidatorState) ->
+    validate_response_body('Error', 'Error', Body, ValidatorState);
+
+validate_response('UserVerify', 200, Body, ValidatorState) ->
+    validate_response_body('', '', Body, ValidatorState);
+validate_response('UserVerify', 400, Body, ValidatorState) ->
+    validate_response_body('Error', 'Error', Body, ValidatorState);
+validate_response('UserVerify', 409, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
 
 

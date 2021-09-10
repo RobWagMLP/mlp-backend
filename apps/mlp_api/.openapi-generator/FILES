@@ -4,7 +4,6 @@ rebar.config
 src/mlp_api.app.src
 src/mlp_api_api.erl
 src/mlp_api_auth.erl
-src/mlp_api_default_logic_handler.erl
 src/mlp_api_logic_handler.erl
 src/mlp_api_maintenance_handler.erl
 src/mlp_api_registration_handler.erl

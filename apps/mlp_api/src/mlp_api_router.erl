@@ -64,6 +64,11 @@ get_operations() ->
             path => "/mlp_backend/user/signup_user",
             method => <<"POST">>,
             handler => 'mlp_api_registration_handler'
+        },
+        'UserVerify' => #{
+            path => "/mlp_backend/user/verify",
+            method => <<"POST">>,
+            handler => 'mlp_api_registration_handler'
         }
     }.
 

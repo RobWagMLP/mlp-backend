@@ -134,8 +134,52 @@
         },
         "security" : [ ],
         "summary" : "create a person",
-        "tags" : [ "registration" ],
-        "x-user_role" : [ "admin", "user" ]
+        "tags" : [ "registration" ]
+      }
+    },
+    "/user/verify" : {
+      "post" : {
+        "description" : "create a person using name, given name in the body and email address/password in basic auth header. this email address will receive a mail to activate the account.",
+        "operationId" : "user_verify",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserVerify"
+              }
+            }
+          },
+          "description" : "verify a token",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "person verified"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "unexpected error"
+          },
+          "409" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "person already created"
+          }
+        },
+        "security" : [ ],
+        "summary" : "verify a person",
+        "tags" : [ "registration" ]
       }
     }
   },
@@ -192,6 +236,21 @@
             "type" : "string"
           },
           "email_address" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "UserVerify" : {
+        "example" : {
+          "password" : "password",
+          "verification_code" : "verification_code"
+        },
+        "properties" : {
+          "verification_code" : {
+            "type" : "string"
+          },
+          "password" : {
             "type" : "string"
           }
         },

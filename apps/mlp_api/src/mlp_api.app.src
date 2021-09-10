@@ -9,8 +9,7 @@
         inets,
         jsx,
         jesse,
-        cowboy,
-        dbconnect
+        cowboy
     ]},
     {env, [
     ]},

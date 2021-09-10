@@ -15,6 +15,11 @@
     ApiKey :: binary()
 ) ->
     Result :: boolean() | {boolean(), context()}.
+-callback authorize_api_key(
+    OperationID :: mlp_api_api:operation_id(),
+    ApiKey :: binary()
+) ->
+    Result :: boolean() | {boolean(), context()}.
 
 
 -callback handle_request(OperationID :: mlp_api_api:operation_id(), cowboy_req:req(), Context :: context()) ->
@@ -31,6 +36,10 @@
 handle_request(Handler, OperationID, Req, Context) ->
     Handler:handle_request(OperationID, Req, Context).
 
+-spec authorize_api_key(Handler :: atom(), OperationID :: mlp_api_api:operation_id(), ApiKey :: binary()) ->
+    Result :: false | {true, context()}.
+authorize_api_key(Handler, OperationID, ApiKey) ->
+    Handler:authorize_api_key(OperationID, ApiKey).
 -spec authorize_api_key(Handler :: atom(), OperationID :: mlp_api_api:operation_id(), ApiKey :: binary()) ->
     Result :: false | {true, context()}.
 authorize_api_key(Handler, OperationID, ApiKey) ->

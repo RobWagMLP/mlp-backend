@@ -54,6 +54,14 @@ allowed_methods(
 ) ->
     {[<<"POST">>], Req, State};
 
+allowed_methods(
+    Req,
+    State = #state{
+        operation_id = 'UserVerify'
+    }
+) ->
+    {[<<"POST">>], Req, State};
+
 allowed_methods(Req, State) ->
     {[], Req, State}.
 
@@ -85,6 +93,16 @@ valid_content_headers(
     Req0,
     State = #state{
         operation_id = 'UserCreate'
+    }
+) ->
+    Headers = [],
+    {Result, Req} = validate_headers(Headers, Req0),
+    {Result, Req, State};
+
+valid_content_headers(
+    Req0,
+    State = #state{
+        operation_id = 'UserVerify'
     }
 ) ->
     Headers = [],

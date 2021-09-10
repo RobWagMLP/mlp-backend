@@ -4,7 +4,8 @@ create or replace function sp_user_verify(
            verification_code     varchar,
            password              varchar
 )
-as    
+returns void
+as  
 $$
 --Revision $Id: f08d6c87498272ebf22f2dc65f17bc921041a137 $ 
 declare
@@ -20,7 +21,7 @@ begin
      and  e.datetime_verificate = null;
 
  if e.user_create_id is null then
-    raise exception '%' 'invalid validationcode';
+    raise exception '%', 'invalid validationcode';
  end if;
 
   insert 
@@ -32,7 +33,6 @@ begin
      datetime_create,
      record_state
    )
-  values(
   select p.user_name      ,
          p.email_address  ,
          clock_timestamp(),
@@ -40,7 +40,7 @@ begin
          clock_timestamp(),
          'A'
    from  user_create p
-   where p.user_create_id = v_user_create_id)
+   where p.user_create_id = v_user_create_id
    returning user_id into v_user_id;
 
    insert 

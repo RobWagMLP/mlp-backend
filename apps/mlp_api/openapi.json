@@ -288,7 +288,12 @@
       "UserVerify": {
         "type": "object",
         "properties": {
-          "verification_code": null
+          "verification_code": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
         }
       }
     }

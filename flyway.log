@@ -1,8 +1,16 @@
 Flyway Teams Edition 7.14.1 by Redgate
 Database: jdbc:postgresql:mlp_store (PostgreSQL 12.8)
 ----------------------------------------
-Flyway Teams features are enabled by default for the next 24 days. Learn more at https://rd.gt/3A4IWym
+Flyway Teams features are enabled by default for the next 25 days. Learn more at https://rd.gt/3A4IWym
 ----------------------------------------
-Successfully validated 27 migrations (execution time 00:00.024s)
+Successfully validated 29 migrations (execution time 00:00.031s)
 Current version of schema "public": 1.0.0.0005
-Schema "public" is up to date. No migration necessary.
+Migrating schema "public" to version "1.0.0.0006 - alter table email verification codes"
+Migrating schema "public" with repeatable migration "sp user verify"
++------------------+
+| sp_drop_function |
++------------------+
+|                  |
++------------------+
+
+Successfully applied 2 migrations to schema "public", now at version v1.0.0.0006 (execution time 00:00.040s)
