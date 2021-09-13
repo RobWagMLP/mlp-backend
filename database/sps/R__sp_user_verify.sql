@@ -21,7 +21,7 @@ begin
      and  e.datetime_verificate = null;
 
  if e.user_create_id is null then
-    raise exception '%', 'invalid validationcode';
+    perform sp_raise_exception(1000001);
  end if;
 
   insert 

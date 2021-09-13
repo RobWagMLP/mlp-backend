@@ -21,14 +21,14 @@ authorize_api_key(_, _) -> {true, #{}}.
 
 handle_request('UserGet', Context, #{user_name := UserName}) ->
     case dbconnect:call_sp(db,sp_get_user,#{user_name => UserName}, [true, strip_nulls]) of
-        {ok, <<"result">>, Res} -> {200, #{}, jsx:decode(Res)};
-         _                      -> {400, #{}, #{}}
+        {ok, <<"result">>, Res}         -> {200, #{}, jsx:decode(Res)};
+        {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
 
 handle_request('UserVerify', Context, #{'UserVerify' := Params}) ->
     case dbconnect:call_sp(db,sp_user_verify,Params, [true ]) of
-        {ok, <<"result">>, _} -> {200, #{}, #{result => ok}};
-        Else                    -> {400, #{}, Else       }
+        {ok, <<"result">>, _}           -> {200, #{}, #{result => ok}};
+        {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
 
 
@@ -39,7 +39,7 @@ handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
                                     Token = maps:get(<<"verification_code">>, ParsedRes),
                                     email_worker:build_validation_template(maps:get(<<"user_name">>, Params), maps:get(<<"email_address">>, Params), Token),
                                     {200, #{}, #{ user_id => UserID } };
-         _                      -> {400, #{}, #{}}
+        {error, ErrorCode,ErrorText} -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
 
 handle_request(OperationID, Req, Context) ->
