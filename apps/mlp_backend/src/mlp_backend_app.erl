@@ -10,6 +10,7 @@
 -export([start/2, stop/1, startServer/0]).
 
 start(_StartType, _StartArgs) ->
+   dbconnect:start_link(),
    mlp_backend_sup:start_link(),
    startServer().
 

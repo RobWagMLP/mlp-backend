@@ -26,7 +26,7 @@ handle_request('UserGet', Context, #{user_name := UserName}) ->
         end;
 
 handle_request('UserVerify', Context, #{'UserVerify' := Params}) ->
-    case dbconnect:call_sp(db,sp_user_verify,Params, [true ]) of
+    case dbconnect:call_sp(db,sp_user_verify,Params, true ) of
         {ok, <<"result">>, _}           -> {200, #{}, #{result => ok}};
         {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;

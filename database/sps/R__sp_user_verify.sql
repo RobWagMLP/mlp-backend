@@ -15,21 +15,26 @@ declare
   v_user_id              bigint            ;
 begin
 
-  select e.user_create_id
-   into  v_user_create_id
-    where e.v_verification_code = v_verification_code
-     and  e.datetime_verificate = null;
+  select  e.user_create_id
+    into  v_user_create_id
+    from  email_verification_code e
+    where e.verification_code = v_verification_code
+     and  e.datetime_verificate is null;
 
- if e.user_create_id is null then
+ if v_user_create_id is null then
     perform sp_raise_exception(1000001);
  end if;
+
+  update email_verification_code as e
+    set datetime_verificate = statement_timestamp()
+    where e.user_create_id = v_user_create_id;
 
   insert 
    into user_valid(
      user_name     ,
      email_address ,
      valid_from    ,
-     valid_to      ,
+     invalid_from  ,
      datetime_create,
      record_state
    )
@@ -51,7 +56,7 @@ begin
        invalid_from
      ) values(
        v_user_id,
-       v_password,
+       md5(v_password),
        clock_timestamp(),
        'infinity'
      );
