@@ -202,10 +202,7 @@
       "access_token": []
     },
     {
-      "oidc_header": []
-    },
-    {
-      "api_key": []
+      "bearer_auth": []
     }
   ],
   "components": {
@@ -215,29 +212,15 @@
         "scheme": "basic",
         "description": "email address and password"
       },
-      "biometryAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "base64 encoded biometry template"
-      },
-      "qrAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "qr"
-      },
       "access_token": {
         "type": "http",
         "scheme": "bearer",
         "description": "the access_token received from the idp"
       },
-      "oidc_header": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-amzn-oidc-data"
-      },
-      "api_key": {
+      "bearer_auth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     },
     "schemas": {
