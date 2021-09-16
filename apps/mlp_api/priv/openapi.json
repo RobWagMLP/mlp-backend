@@ -31,9 +31,7 @@
   }, {
     "access_token" : [ ]
   }, {
-    "oidc_header" : [ ]
-  }, {
-    "api_key" : [ ]
+    "bearer_auth" : [ ]
   } ],
   "tags" : [ {
     "description" : "initial user signup",
@@ -79,7 +77,9 @@
             "description" : "unexpected error"
           }
         },
-        "security" : [ ],
+        "security" : [ {
+          "bearer_auth" : [ ]
+        } ],
         "summary" : "get person data",
         "tags" : [ "maintenance" ],
         "x-user_role" : [ "customer" ]
@@ -263,27 +263,13 @@
         "scheme" : "basic",
         "type" : "http"
       },
-      "biometryAuth" : {
-        "description" : "base64 encoded biometry template",
-        "scheme" : "bearer",
-        "type" : "http"
-      },
-      "qrAuth" : {
-        "in" : "header",
-        "name" : "qr",
-        "type" : "apiKey"
-      },
       "access_token" : {
         "description" : "the access_token received from the idp",
         "scheme" : "bearer",
         "type" : "http"
       },
-      "oidc_header" : {
-        "in" : "header",
-        "name" : "x-amzn-oidc-data",
-        "type" : "apiKey"
-      },
-      "api_key" : {
+      "bearer_auth" : {
+        "bearerFormat" : "JWT",
         "scheme" : "bearer",
         "type" : "http"
       }

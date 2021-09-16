@@ -13,6 +13,7 @@
 
 authorize_api_key(LogicHandler, OperationID, From, KeyParam, Req0) ->
     {ApiKey, Req} = get_api_key(From, KeyParam, Req0),
+    error_logger:info_msg({From, KeyParam, Req0, ApiKey}),
     case ApiKey of
         undefined ->
             AuthHeader = <<"">>,
@@ -24,10 +25,6 @@ authorize_api_key(LogicHandler, OperationID, From, KeyParam, Req0) ->
                 ApiKey
             ),
             case Result of
-                {true, Context}  ->
-                    {true, Context, Req};
-                {true, Context}  ->
-                    {true, Context, Req};
                 false ->
                     AuthHeader = <<"">>,
                     {false, AuthHeader, Req}

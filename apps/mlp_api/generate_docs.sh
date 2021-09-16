@@ -14,4 +14,4 @@ fi
 #######################################
 #code für core
 #######################################
-java -jar swagger-codegen-cli.jar generate -l html2 -i openapi.json  -o ./priv
+java -jar swagger-codegen-cli.jar generate -l dynamic-html -i openapi.json  -o ./priv

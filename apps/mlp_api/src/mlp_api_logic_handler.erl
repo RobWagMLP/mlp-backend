@@ -8,16 +8,14 @@
     Body :: #{}
 }.
 
+-define(free_operations, ['UserVerify', 'UserCreate']).
+-define(alg, application:get_env(jwt, alg)).
+-define(key, application:get_env(jwt, key))
 -export_type([handler_response/0]).
 
--callback authorize_api_key(
-    OperationID :: mlp_api_api:operation_id(),
-    ApiKey :: binary()
-) ->
-    Result :: boolean() | {boolean(), context()}.
 
 
--callback handle_request(OperationID :: mlp_api_api:operation_id(), cowboy_req:req(), Context :: context()) ->
+-callback handle_request(OperationID :: mlp_api_api:operation_id(), cowboy_req:req(), Context :: context()) ->  
     handler_response().
 
 -spec handle_request(
@@ -29,10 +27,34 @@
     handler_response().
 
 handle_request(Handler, OperationID, Req, Context) ->
-    Handler:handle_request(OperationID, Req, Context).
+    case handleAuth(Req, OperationID, Context) of 
+        true -> Handler:handle_request(OperationID, Req, Context);
+        _    -> {401, #{}, #{error => authentication_error}}
+    end.
 
--spec authorize_api_key(Handler :: atom(), OperationID :: mlp_api_api:operation_id(), ApiKey :: binary()) ->
-    Result :: false | {true, context()}.
-authorize_api_key(Handler, OperationID, ApiKey) ->
-    Handler:authorize_api_key(OperationID, ApiKey).
 
+handleAuth(#{ headers := Headers}, OperationID, Context ) ->
+    case maps:get(<<"authorization">>, Headers, null) of
+        null -> false;
+        _    -> Bearer = maps:get(<<"authorization">>, Headers),
+                JWT = iolist_to_binary(re:replace(Bearer, "Bearer ", "")),
+                case jwerl:verify(JWT, ?alg, ?key) of
+                    {ok, Params} -> handle_jwt(Params, OperationID, Context);
+                    _            -> false
+                end
+    end.
+
+handle_jwt(#{ operations := Operations, exp := TS}, OperationID, _) ->
+    lists:member(OperationID, ?free_operations);
+
+handle_jwt(#{ user_name := User_Name, exp := TS}, OperationID, #{user_name := User_Name_Req}) ->
+    case User_Name of 
+        User_Name_Req -> true;
+        _             -> false
+    end;
+
+handle_jwt(_ ,_ ,'JwtGet') ->
+    true.
+
+handle_jwt(_ ,_ ,__) ->
+    false.

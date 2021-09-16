@@ -2,7 +2,7 @@
              [{description,"Interface to the mlp_backend Plattform"},
               {vsn,"1.0.0"},
               {registered,[]},
-              {applications,[kernel,stdlib,ssl,inets,jsx,jesse,cowboy]},
+              {applications,[kernel,stdlib,ssl,inets,jsx,jesse,cowboy,jwerl]},
               {env,[]},
               {modules,[mlp_api_api,mlp_api_auth,
                         mlp_api_default_logic_handler,mlp_api_logic_handler,

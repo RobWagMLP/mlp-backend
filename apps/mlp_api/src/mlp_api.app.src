@@ -9,7 +9,8 @@
         inets,
         jsx,
         jesse,
-        cowboy
+        cowboy,
+        jwerl
     ]},
     {env, [
     ]},

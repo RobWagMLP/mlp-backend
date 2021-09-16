@@ -67,7 +67,11 @@
         "tags": [
           "maintenance"
         ],
-        "security": [],
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "person found",

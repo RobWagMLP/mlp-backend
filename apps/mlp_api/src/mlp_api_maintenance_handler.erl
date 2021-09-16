@@ -63,8 +63,13 @@ allowed_methods(Req, State) ->
         Req :: cowboy_req:req(),
         State :: state()
     }.
-is_authorized(Req, State) ->
-    {true, Req, State}.
+is_authorized(
+    Req0,
+    State = #state{
+        operation_id = 'UserGet' = OperationID,
+        logic_handler = LogicHandler
+    }) ->
+    {true, Req0, State}.
 
 -spec content_types_accepted(Req :: cowboy_req:req(), State :: state()) ->
     {

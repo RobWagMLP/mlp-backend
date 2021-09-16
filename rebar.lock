@@ -1,5 +1,6 @@
 {"1.1.0",
-[{<<"bbmustache">>,{pkg,<<"bbmustache">>,<<"1.5.0">>},0},
+[{<<"base64url">>,{pkg,<<"base64url">>,<<"0.0.1">>},1},
+ {<<"bbmustache">>,{pkg,<<"bbmustache">>,<<"1.5.0">>},0},
  {<<"bcrypt">>,{pkg,<<"bcrypt">>,<<"1.0.2">>},0},
  {<<"certifi">>,{pkg,<<"certifi">>,<<"2.5.1">>},1},
  {<<"cowboy">>,
@@ -31,6 +32,7 @@
        {ref,"fc2a001073f2300ba38427c23e83d5673c020542"}},
   0},
  {<<"jwerl">>,{pkg,<<"jwerl">>,<<"1.1.0">>},0},
+ {<<"jwt">>,{pkg,<<"jwt">>,<<"0.1.10">>},0},
  {<<"lager">>,{pkg,<<"lager">>,<<"3.6.5">>},0},
  {<<"metrics">>,{pkg,<<"metrics">>,<<"1.0.1">>},1},
  {<<"mimerl">>,{pkg,<<"mimerl">>,<<"1.2.0">>},1},
@@ -65,6 +67,7 @@
  {<<"varpool">>,{pkg,<<"varpool">>,<<"1.7.3">>},0}]}.
 [
 {pkg_hash,[
+ {<<"base64url">>, <<"36A90125F5948E3AFD7BE97662A1504B934DD5DAC78451CA6E9ABF85A10286BE">>},
  {<<"bbmustache">>, <<"8CFDE0602E90A4057E161BF5288ADE854B4E511E2E8924966A8438730E958381">>},
  {<<"bcrypt">>, <<"6735F66D3A7309AF166CE660161009B7D9B9216508B8B2E6A0A9090AF35CB757">>},
  {<<"certifi">>, <<"867CE347F7C7D78563450A18A6A28A8090331E77FA02380B4A21962A65D36EE5">>},
@@ -77,6 +80,7 @@
  {<<"idna">>, <<"689C46CBCDF3524C44D5F3DDE8001F364CD7608A99556D8FBD8239A5798D4C10">>},
  {<<"iso8601">>, <<"D1CEE73F56D71C35590C6B2DB2074873BF410BABAAB768F6EA566366D8CA4810">>},
  {<<"jwerl">>, <<"51F1893C797FA478B2FA569FA8E054DA63CD628C5E2D93A0BC46F6B4F105A35E">>},
+ {<<"jwt">>, <<"880BA4B38280E2C365E18085A585F6C7C82AC66372C25E6FE12D5928C7F6CF66">>},
  {<<"lager">>, <<"831910109F3FCB503DEBF658CA0538836B348C58BFBF349A6D48228096CE9040">>},
  {<<"metrics">>, <<"25F094DEA2CDA98213CECC3AEFF09E940299D950904393B2A29D191C346A8486">>},
  {<<"mimerl">>, <<"67E2D3F571088D5CFD3E550C383094B47159F3EEE8FFA08E64106CDF5E981BE3">>},
