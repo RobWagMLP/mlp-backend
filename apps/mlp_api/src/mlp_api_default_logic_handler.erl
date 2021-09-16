@@ -18,16 +18,12 @@ authorize_api_key(_, _) -> {true, #{}}.
 ) ->
     {Status :: cowboy:http_status(), Headers :: cowboy:http_headers(), Body :: jsx:json_term()}.
 
-
+%%cookies => [#{name => <<"token">>,value => Token,opts => #{path => "/",http_only => true, secure => true} } ]
 
 
 handle_request('JwtGet', Context, _) ->
-    OS_Time          = os:system_time(seconds),
-    {ok, ExpTime }   = application:get_env(jwt, exp_free), 
-    {ok, Alg    }    = application:get_env(jwt, alg),
-    {ok, Key    }    = application:get_env(jwt, key),
-    ExPTotal         = OS_Time + ExpTime,
-    {200, #{}, #{token => jwerl:sign(#{operations => ?free_operations, exp => ExPTotal}, Alg, Key)}};
+    [Cookie, Token] = create_cookie_and_token(exp_free),
+    {200, #{<<"Set-Cookie">> => Cookie}, #{token => Token}};
 
 handle_request('UserGet', Context, #{user_name := UserName}) ->
     case dbconnect:call_sp(db,sp_get_user,#{user_name => UserName}, [true, strip_nulls]) of
@@ -53,12 +49,8 @@ handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
 
 handle_request('UserLogin', Context, #{'UserLogin' := #{<<"user_name">> := UserName, <<"password">> := _PW } = Params}) ->
     case dbconnect:call_sp(db,sp_user_login,Params, true ) of
-        {ok, <<"result">>, _}           ->  OS_Time          = os:system_time(seconds),
-                                            {ok, ExpTime }   = application:get_env(jwt, exp_log), 
-                                            {ok, Alg    }    = application:get_env(jwt, alg),
-                                            {ok, Key    }    = application:get_env(jwt, key),
-                                            ExPTotal         = OS_Time + ExpTime,
-                                            {200, #{}, #{token => jwerl:sign(#{user_name => UserName, exp => ExPTotal}, Alg, Key)}};
+        {ok, <<"result">>, _}           ->  [Cookie, Token] = create_cookie_and_token(exp_log, UserName),
+                                            {200, #{<<"Set-Cookie">> => Cookie}, #{token => Token}};
         {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
 
@@ -70,3 +62,27 @@ handle_request(OperationID, Req, Context) ->
     ),
     {501, #{}, #{}}.
 
+%%%%%%%%%%%%%%%%%
+%%% Helper
+%%% %%%%%%%%%%%%
+
+create_cookie_and_token(Type, UserName) ->
+    OS_Time          = os:system_time(seconds),
+    {ok, ExpTime }   = application:get_env(jwt, Type), 
+    {ok, Alg    }    = application:get_env(jwt, alg),
+    {ok, Key    }    = application:get_env(jwt, key),
+    ExPTotal         = OS_Time + ExpTime,
+    Token            = jwerl:sign(#{user_name => UserName, exp => ExPTotal}, Alg, Key),
+    Cookie           = <<"jwt=", Token/binary, "; Secure; HttpOnly">>,
+    [Cookie, Token].
+
+
+create_cookie_and_token(Type) ->
+    OS_Time          = os:system_time(seconds),
+    {ok, ExpTime }   = application:get_env(jwt, Type), 
+    {ok, Alg    }    = application:get_env(jwt, alg),
+    {ok, Key    }    = application:get_env(jwt, key),
+    ExPTotal         = OS_Time + ExpTime,
+    Token            = jwerl:sign(#{operations => ?free_operations, exp => ExPTotal}, Alg, Key),
+     Cookie           = <<"jwt=", Token/binary, "; Secure; HttpOnly">>,
+    [Cookie, Token].

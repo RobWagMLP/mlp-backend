@@ -39,7 +39,7 @@ handleAuth(#{ headers := #{ <<"authorization">> := Bearer }}, OperationID, Conte
     case jwerl:verify(JWT, Alg, Key) of
         {ok, Params} -> error_logger:info_msg(Params),
                         handle_jwt(Params, OperationID, Context);
-        _            -> false
+        _            -> handle_jwt(null, OperationID, null )
     end;
 
 handleAuth(#{ headers := #{ <<"cookie">> := Cookie } }, OperationID, Context ) ->
@@ -52,32 +52,35 @@ handleAuth(#{ headers := #{ <<"cookie">> := Cookie } }, OperationID, Context ) -
                     case jwerl:verify(JWT, Alg, Key) of
                         {ok, Params} -> error_logger:info_msg(Params),
                                         handle_jwt(Params, OperationID, Context);
-                        _            -> false
+                        _            -> handle_jwt(null, OperationID, null )
                     end
     end;
 
 handleAuth(_, OperationID, _) ->
-    handle_jwt(null, null, OperationID).
+    handle_jwt(null, OperationID, null).
 
 
 handle_jwt(#{ operations := Operations, exp := TS}, OperationID, _) ->
     case lists:member(atom_to_binary(OperationID, unicode), Operations) of
-        true -> check_exp_date(TS);
-        _    -> false
+        true -> check_exp_date(TS, OperationID);
+        _    -> handle_jwt(null, OperationID, null )
     end;
 
 handle_jwt(#{ user_name := User_Name, exp := TS}, OperationID, #{user_name := User_Name_Req}) ->
     case User_Name of 
-        User_Name_Req -> check_exp_date(TS);
-        _             -> false
+        User_Name_Req -> check_exp_date(TS, OperationID);
+        _             -> handle_jwt(null, OperationID, null )
     end;
 
-handle_jwt(_ ,_ ,'JwtGet') ->
+handle_jwt(_ ,'JwtGet' , _) ->
     true;
 
 handle_jwt(_ ,_ ,__) ->
     false.
 
-check_exp_date(TS) ->
+check_exp_date(TS, OperationID) ->
     CompData = os:system_time(seconds),
-    CompData < TS.
+    case CompData < TS of
+        true -> true;
+        _    -> handle_jwt(null, OperationID, null )
+    end.
