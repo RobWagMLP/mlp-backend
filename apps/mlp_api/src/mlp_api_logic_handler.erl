@@ -8,9 +8,8 @@
     Body :: #{}
 }.
 
--define(free_operations, ['UserVerify', 'UserCreate']).
 -define(alg, application:get_env(jwt, alg)).
--define(key, application:get_env(jwt, key))
+-define(key, application:get_env(jwt, key)).
 -export_type([handler_response/0]).
 
 
@@ -35,26 +34,36 @@ handle_request(Handler, OperationID, Req, Context) ->
 
 handleAuth(#{ headers := Headers}, OperationID, Context ) ->
     case maps:get(<<"authorization">>, Headers, null) of
-        null -> false;
+        null -> handle_jwt(null, null, OperationID);
         _    -> Bearer = maps:get(<<"authorization">>, Headers),
                 JWT = iolist_to_binary(re:replace(Bearer, "Bearer ", "")),
-                case jwerl:verify(JWT, ?alg, ?key) of
-                    {ok, Params} -> handle_jwt(Params, OperationID, Context);
+                {ok, Alg    }    = application:get_env(jwt, alg),
+                {ok, Key    }    = application:get_env(jwt, key),
+                case jwerl:verify(JWT, Alg, Key) of
+                    {ok, Params} -> error_logger:info_msg(Params),
+                                    handle_jwt(Params, OperationID, Context);
                     _            -> false
                 end
     end.
 
 handle_jwt(#{ operations := Operations, exp := TS}, OperationID, _) ->
-    lists:member(OperationID, ?free_operations);
+    case lists:member(atom_to_binary(OperationID, unicode), Operations) of
+        true -> check_exp_date(TS);
+        _    -> false
+    end;
 
 handle_jwt(#{ user_name := User_Name, exp := TS}, OperationID, #{user_name := User_Name_Req}) ->
     case User_Name of 
-        User_Name_Req -> true;
+        User_Name_Req -> check_exp_date(TS);
         _             -> false
     end;
 
 handle_jwt(_ ,_ ,'JwtGet') ->
-    true.
+    true;
 
 handle_jwt(_ ,_ ,__) ->
     false.
+
+check_exp_date(TS) ->
+    CompData = os:system_time(seconds),
+    CompData < TS.

@@ -1,7 +1,8 @@
 --------------------------------------------------------
 --dank der referentiellen integritaet koennen wir die tabelle nicht einfach leer machen und neu befuellen...
 with new_values (error_code,procedure                     ,error_text                          )
-      as(values (1000001   ,'sp_user_verify'              ,'invalid validation code'                                           ),
+      as(values (1000001   ,'sp_user_verify'              ,'invalid validation code'                                       ),
+                (1000002   ,'sp_user_login'               ,'invalid login data'                                            ),
                 (9999999   ,'to_be_named'                 ,'error_text to be set'                                          )
                  ),
      deleted   as(delete from error_code

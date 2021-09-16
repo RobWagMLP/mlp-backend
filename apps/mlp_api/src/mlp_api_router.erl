@@ -55,9 +55,19 @@ group_paths() ->
 
 get_operations() ->
     #{ 
+        'JwtGet' => #{
+            path => "/mlp_backend/jwt",
+            method => <<"GET">>,
+            handler => 'mlp_api_jwt_handler'
+        },
         'UserGet' => #{
             path => "/mlp_backend/user",
             method => <<"GET">>,
+            handler => 'mlp_api_maintenance_handler'
+        },
+        'UserLogin' => #{
+            path => "/mlp_backend/user/login",
+            method => <<"POST">>,
             handler => 'mlp_api_maintenance_handler'
         },
         'UserCreate' => #{

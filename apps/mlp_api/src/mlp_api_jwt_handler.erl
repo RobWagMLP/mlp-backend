@@ -1,5 +1,5 @@
 %% basic handler
--module(mlp_api_maintenance_handler).
+-module(mlp_api_jwt_handler).
 
 %% Cowboy REST callbacks
 -export([allowed_methods/2]).
@@ -49,18 +49,10 @@ init(Req, {Operations, LogicHandler, ValidatorState}) ->
 allowed_methods(
     Req,
     State = #state{
-        operation_id = 'UserGet'
+        operation_id = 'JwtGet'
     }
 ) ->
     {[<<"GET">>], Req, State};
-
-allowed_methods(
-    Req,
-    State = #state{
-        operation_id = 'UserLogin'
-    }
-) ->
-    {[<<"POST">>], Req, State};
 
 allowed_methods(Req, State) ->
     {[], Req, State}.
@@ -71,21 +63,8 @@ allowed_methods(Req, State) ->
         Req :: cowboy_req:req(),
         State :: state()
     }.
-is_authorized(
-    Req0,
-    State = #state{
-        operation_id = 'UserGet' = OperationID,
-        logic_handler = LogicHandler
-    }
-) ->
-    {true, Req0, State};
-is_authorized(
-    Req0,
-    State = #state{
-        operation_id = 'UserLogin' = OperationID,
-        logic_handler = LogicHandler
-    }
-) ->  {true, Req0, State}.
+is_authorized(Req, State) ->
+    {true, Req, State}.
 
 -spec content_types_accepted(Req :: cowboy_req:req(), State :: state()) ->
     {
@@ -105,17 +84,7 @@ content_types_accepted(Req, State) ->
 valid_content_headers(
     Req0,
     State = #state{
-        operation_id = 'UserGet'
-    }
-) ->
-    Headers = [],
-    {Result, Req} = validate_headers(Headers, Req0),
-    {Result, Req, State};
-
-valid_content_headers(
-    Req0,
-    State = #state{
-        operation_id = 'UserLogin'
+        operation_id = 'JwtGet'
     }
 ) ->
     Headers = [],

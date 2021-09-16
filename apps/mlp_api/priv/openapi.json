@@ -41,6 +41,37 @@
     "name" : "maintenance"
   } ],
   "paths" : {
+    "/jwt" : {
+      "get" : {
+        "description" : "get jwt token for further requests",
+        "operationId" : "jwt_get",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Token"
+                }
+              }
+            },
+            "description" : "token created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "unexpected error"
+          }
+        },
+        "security" : [ ],
+        "summary" : "get inital token",
+        "tags" : [ "jwt" ]
+      }
+    },
     "/user" : {
       "get" : {
         "description" : "get the persons data using current credentials",
@@ -181,6 +212,50 @@
         "summary" : "verify a person",
         "tags" : [ "registration" ]
       }
+    },
+    "/user/login" : {
+      "post" : {
+        "description" : "create a person using name, given name in the body and email address/password in basic auth header. this email address will receive a mail to activate the account.",
+        "operationId" : "user_login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserLogin"
+              }
+            }
+          },
+          "description" : "verify a token",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Token"
+                }
+              }
+            },
+            "description" : "person found"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "unexpected error"
+          }
+        },
+        "security" : [ {
+          "bearer_auth" : [ ]
+        } ],
+        "summary" : "login a person",
+        "tags" : [ "maintenance" ]
+      }
     }
   },
   "components" : {
@@ -251,6 +326,32 @@
             "type" : "string"
           },
           "password" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "UserLogin" : {
+        "example" : {
+          "password" : "password",
+          "user_name" : "user_name"
+        },
+        "properties" : {
+          "user_name" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "Token" : {
+        "example" : {
+          "token" : "token"
+        },
+        "properties" : {
+          "token" : {
             "type" : "string"
           }
         },

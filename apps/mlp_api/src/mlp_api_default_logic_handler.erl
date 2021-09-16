@@ -5,6 +5,8 @@
 -export([handle_request/3]).
 -export([authorize_api_key/2]).
 
+-define(free_operations, ['UserVerify', 'UserCreate', 'UserLogin']).
+
 -spec authorize_api_key(OperationID :: mlp_api_api:operation_id(), ApiKey :: binary()) -> {true, #{}}.
 
 authorize_api_key(_, _) -> {true, #{}}.
@@ -19,6 +21,14 @@ authorize_api_key(_, _) -> {true, #{}}.
 
 
 
+handle_request('JwtGet', Context, _) ->
+    OS_Time          = os:system_time(seconds),
+    {ok, ExpTime }   = application:get_env(jwt, exp_free), 
+    {ok, Alg    }    = application:get_env(jwt, alg),
+    {ok, Key    }    = application:get_env(jwt, key),
+    ExPTotal         = OS_Time + ExpTime,
+    {200, #{}, #{token => jwerl:sign(#{operations => ?free_operations, exp => ExPTotal}, Alg, Key)}};
+
 handle_request('UserGet', Context, #{user_name := UserName}) ->
     case dbconnect:call_sp(db,sp_get_user,#{user_name => UserName}, [true, strip_nulls]) of
         {ok, <<"result">>, Res}         -> {200, #{}, jsx:decode(Res)};
@@ -31,7 +41,6 @@ handle_request('UserVerify', Context, #{'UserVerify' := Params}) ->
         {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
 
-
 handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
     case dbconnect:call_sp(db,sp_create_user, Params, true) of
         {ok, <<"result">>, Res } -> ParsedRes = jsx:decode(Res, [return_maps]), 
@@ -41,6 +50,18 @@ handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
                                     {200, #{}, #{ user_id => UserID } };
         {error, ErrorCode,ErrorText} -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
+
+handle_request('UserLogin', Context, #{'UserLogin' := #{<<"user_name">> := UserName, <<"password">> := _PW } = Params}) ->
+    case dbconnect:call_sp(db,sp_user_login,Params, true ) of
+        {ok, <<"result">>, _}           ->  OS_Time          = os:system_time(seconds),
+                                            {ok, ExpTime }   = application:get_env(jwt, exp_log), 
+                                            {ok, Alg    }    = application:get_env(jwt, alg),
+                                            {ok, Key    }    = application:get_env(jwt, key),
+                                            ExPTotal         = OS_Time + ExpTime,
+                                            {200, #{}, #{token => jwerl:sign(#{user_name => UserName, exp => ExPTotal}, Alg, Key)}};
+        {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
+        end;
+
 
 handle_request(OperationID, Req, Context) ->
     error_logger:error_msg(

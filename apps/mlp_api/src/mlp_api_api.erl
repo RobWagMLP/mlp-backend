@@ -15,9 +15,19 @@
 -spec request_params(OperationID :: operation_id()) -> [Param :: request_param()].
 
 
+request_params('JwtGet') ->
+    [
+    ];
+
+
 request_params('UserGet') ->
     [
         'user_name'
+    ];
+
+request_params('UserLogin') ->
+    [
+        'UserLogin'
     ];
 
 
@@ -61,11 +71,21 @@ request_params(_) ->
 
 
 
+
 request_param_info('UserGet', 'user_name') ->
     #{
         source => qs_val  ,
         rules => [
             {type, 'binary'},
+            required
+        ]
+    };
+
+request_param_info('UserLogin', 'UserLogin') ->
+    #{
+        source =>   body,
+        rules => [
+            schema,
             required
         ]
     };
@@ -136,9 +156,20 @@ populate_request_param(OperationID, Name, Req0, ValidatorState) ->
 ) -> ok | no_return().
 
 
+validate_response('JwtGet', 200, Body, ValidatorState) ->
+    validate_response_body('Token', 'Token', Body, ValidatorState);
+validate_response('JwtGet', 400, Body, ValidatorState) ->
+    validate_response_body('Error', 'Error', Body, ValidatorState);
+
+
 validate_response('UserGet', 200, Body, ValidatorState) ->
     validate_response_body('User', 'User', Body, ValidatorState);
 validate_response('UserGet', 400, Body, ValidatorState) ->
+    validate_response_body('Error', 'Error', Body, ValidatorState);
+
+validate_response('UserLogin', 200, Body, ValidatorState) ->
+    validate_response_body('Token', 'Token', Body, ValidatorState);
+validate_response('UserLogin', 400, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
 
 
