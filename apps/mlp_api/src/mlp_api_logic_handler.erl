@@ -32,19 +32,33 @@ handle_request(Handler, OperationID, Req, Context) ->
     end.
 
 
-handleAuth(#{ headers := Headers}, OperationID, Context ) ->
-    case maps:get(<<"authorization">>, Headers, null) of
-        null -> handle_jwt(null, null, OperationID);
-        _    -> Bearer = maps:get(<<"authorization">>, Headers),
-                JWT = iolist_to_binary(re:replace(Bearer, "Bearer ", "")),
-                {ok, Alg    }    = application:get_env(jwt, alg),
-                {ok, Key    }    = application:get_env(jwt, key),
-                case jwerl:verify(JWT, Alg, Key) of
-                    {ok, Params} -> error_logger:info_msg(Params),
-                                    handle_jwt(Params, OperationID, Context);
-                    _            -> false
-                end
-    end.
+handleAuth(#{ headers := #{ <<"authorization">> := Bearer }}, OperationID, Context ) ->
+    JWT = iolist_to_binary(re:replace(Bearer, "Bearer ", "")),
+    {ok, Alg    }    = application:get_env(jwt, alg),
+    {ok, Key    }    = application:get_env(jwt, key),
+    case jwerl:verify(JWT, Alg, Key) of
+        {ok, Params} -> error_logger:info_msg(Params),
+                        handle_jwt(Params, OperationID, Context);
+        _            -> false
+    end;
+
+handleAuth(#{ headers := #{ <<"cookie">> := Cookie } }, OperationID, Context ) ->
+    [Name, JWTStr] = string:split(Cookie, "="),
+    error_logger:info_msg({Name, JWTStr, Name}),
+    case Name of 
+        <<"jwt">> -> JWT = iolist_to_binary(JWTStr),
+                    {ok, Alg    }    = application:get_env(jwt, alg),
+                    {ok, Key    }    = application:get_env(jwt, key),
+                    case jwerl:verify(JWT, Alg, Key) of
+                        {ok, Params} -> error_logger:info_msg(Params),
+                                        handle_jwt(Params, OperationID, Context);
+                        _            -> false
+                    end
+    end;
+
+handleAuth(_, OperationID, _) ->
+    handle_jwt(null, null, OperationID).
+
 
 handle_jwt(#{ operations := Operations, exp := TS}, OperationID, _) ->
     case lists:member(atom_to_binary(OperationID, unicode), Operations) of
