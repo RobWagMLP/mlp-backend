@@ -26,13 +26,14 @@
     handler_response().
 
 handle_request(Handler, OperationID, Req, Context) ->
+    error_logger:info_msg(Req),
     case handleAuth(Req, OperationID, Context) of 
         true -> Handler:handle_request(OperationID, Req, Context);
         _    -> {401, #{}, #{error => authentication_error}}
     end.
 
 
-handleAuth(#{ headers := #{ <<"authorization">> := Bearer }}, OperationID, Context ) ->
+handleAuth(#{ headers := #{ <<"authorization">> := Bearer } }, OperationID, Context ) ->
     JWT = iolist_to_binary(re:replace(Bearer, "Bearer ", "")),
     {ok, Alg    }    = application:get_env(jwt, alg),
     {ok, Key    }    = application:get_env(jwt, key),
@@ -43,17 +44,18 @@ handleAuth(#{ headers := #{ <<"authorization">> := Bearer }}, OperationID, Conte
     end;
 
 handleAuth(#{ headers := #{ <<"cookie">> := Cookie } }, OperationID, Context ) ->
-    [Name, JWTStr] = string:split(Cookie, "="),
-    error_logger:info_msg({Name, JWTStr, Name}),
-    case Name of 
-        <<"jwt">> -> JWT = iolist_to_binary(JWTStr),
-                    {ok, Alg    }    = application:get_env(jwt, alg),
-                    {ok, Key    }    = application:get_env(jwt, key),
-                    case jwerl:verify(JWT, Alg, Key) of
-                        {ok, Params} -> error_logger:info_msg(Params),
-                                        handle_jwt(Params, OperationID, Context);
-                        _            -> handle_jwt(null, OperationID, null )
-                    end
+    Cookies = string:split(Cookie, ";"),
+    JWTStr = findCookie(Cookies),
+    case JWTStr of 
+        null      ->    handle_jwt(null, OperationID, null );
+        _         ->    JWT = iolist_to_binary(JWTStr),
+                        {ok, Alg    }    = application:get_env(jwt, alg),
+                        {ok, Key    }    = application:get_env(jwt, key),
+                        case jwerl:verify(JWT, Alg, Key) of
+                            {ok, Params} -> error_logger:info_msg(Params),
+                                            handle_jwt(Params, OperationID, Context);
+                            _            -> handle_jwt(null, OperationID, null )
+                        end
     end;
 
 handleAuth(_, OperationID, _) ->
@@ -84,3 +86,13 @@ check_exp_date(TS, OperationID) ->
         true -> true;
         _    -> handle_jwt(null, OperationID, null )
     end.
+
+findCookie([H | T]) ->
+    [Name, JWT] = string:split(H, "="),
+    case Name of 
+        <<"jwt">>   -> JWT;
+        _           -> findCookie(T)
+    end;
+
+findCookie([]) ->
+    null.

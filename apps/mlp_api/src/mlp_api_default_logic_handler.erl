@@ -73,7 +73,7 @@ create_cookie_and_token(Type, UserName) ->
     {ok, Key    }    = application:get_env(jwt, key),
     ExPTotal         = OS_Time + ExpTime,
     Token            = jwerl:sign(#{user_name => UserName, exp => ExPTotal}, Alg, Key),
-    Cookie           = <<"jwt=", Token/binary, "; Secure; HttpOnly">>,
+    Cookie           = <<"jwt=", Token/binary, "; HttpOnly">>,
     [Cookie, Token].
 
 
@@ -84,5 +84,5 @@ create_cookie_and_token(Type) ->
     {ok, Key    }    = application:get_env(jwt, key),
     ExPTotal         = OS_Time + ExpTime,
     Token            = jwerl:sign(#{operations => ?free_operations, exp => ExPTotal}, Alg, Key),
-     Cookie           = <<"jwt=", Token/binary, "; Secure; HttpOnly">>,
+     Cookie           = <<"jwt=", Token/binary, "; HttpOnly">>,
     [Cookie, Token].

@@ -3,6 +3,6 @@ Database: jdbc:postgresql:mlp_store (PostgreSQL 12.8)
 ----------------------------------------
 Flyway Teams features are enabled by default for the next 17 days. Learn more at https://rd.gt/3A4IWym
 ----------------------------------------
-Successfully validated 44 migrations (execution time 00:00.033s)
+Successfully validated 44 migrations (execution time 00:00.031s)
 Current version of schema "public": 1.0.0.0007
 Schema "public" is up to date. No migration necessary.
