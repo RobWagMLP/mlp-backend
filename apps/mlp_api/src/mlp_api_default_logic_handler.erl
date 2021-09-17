@@ -5,7 +5,7 @@
 -export([handle_request/3]).
 -export([authorize_api_key/2]).
 
--define(free_operations, ['UserVerify', 'UserCreate', 'UserLogin']).
+-define(free_operations, ['UserVerify', 'UserCreate', 'UserLogin', 'JwtGet']).
 
 -spec authorize_api_key(OperationID :: mlp_api_api:operation_id(), ApiKey :: binary()) -> {true, #{}}.
 

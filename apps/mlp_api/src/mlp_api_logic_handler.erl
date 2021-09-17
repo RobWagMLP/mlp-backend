@@ -28,8 +28,8 @@
 handle_request(Handler, OperationID, Req, Context) ->
     error_logger:info_msg(Req),
     case handleAuth(Req, OperationID, Context) of 
-        true -> Handler:handle_request(OperationID, Req, Context);
-        _    -> {401, #{}, #{error => authentication_error}}
+        true    -> Handler:handle_request(OperationID, Req, Context);
+        Else    -> {401, #{}, #{error => Else}}
     end.
 
 
@@ -65,26 +65,27 @@ handleAuth(_, OperationID, _) ->
 handle_jwt(#{ operations := Operations, exp := TS}, OperationID, _) ->
     case lists:member(atom_to_binary(OperationID, unicode), Operations) of
         true -> check_exp_date(TS, OperationID);
-        _    -> handle_jwt(null, OperationID, null )
+        _    -> no_access
     end;
 
 handle_jwt(#{ user_name := User_Name, exp := TS}, OperationID, #{user_name := User_Name_Req}) ->
     case User_Name of 
         User_Name_Req -> check_exp_date(TS, OperationID);
-        _             -> handle_jwt(null, OperationID, null )
+        _             -> invalid_user
     end;
 
-handle_jwt(_ ,'JwtGet' , _) ->
+handle_jwt(_ ,'JwtGet' ,__) ->
     true;
 
 handle_jwt(_ ,_ ,__) ->
-    false.
+    unauthorized.
+
 
 check_exp_date(TS, OperationID) ->
     CompData = os:system_time(seconds),
     case CompData < TS of
         true -> true;
-        _    -> handle_jwt(null, OperationID, null )
+        _    -> token_expired
     end.
 
 findCookie([H | T]) ->
