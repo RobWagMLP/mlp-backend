@@ -37,12 +37,12 @@ handle_request('UserVerify', Context, #{'UserVerify' := Params}) ->
         {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
 
-handle_request('UserCreate', Context, #{'NewUser' := Params } ) ->
-    case dbconnect:call_sp(db,sp_create_user, Params, true) of
+handle_request('UserCreate', Context, #{'NewUser' := #{<<"username">> := UserName, <<"email_address">> := EmailAddress} } ) ->
+    case dbconnect:call_sp(db,sp_create_user, #{user_name => UserName, email_address => EmailAddress}, true) of
         {ok, <<"result">>, Res } -> ParsedRes = jsx:decode(Res, [return_maps]), 
                                     UserID = maps:get(<<"user_id">>, ParsedRes),
                                     Token = maps:get(<<"verification_code">>, ParsedRes),
-                                    email_worker:build_validation_template(maps:get(<<"user_name">>, Params), maps:get(<<"email_address">>, Params), Token),
+                                    email_worker:build_validation_template(UserName, EmailAddress, Token),
                                     {200, #{}, #{ user_id => UserID } };
         {error, ErrorCode,ErrorText} -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
