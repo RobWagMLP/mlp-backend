@@ -29,7 +29,7 @@ begin
     set datetime_verificate = statement_timestamp()
     where e.user_create_id = v_user_create_id;
 
-  update user_valid as u
+  update user_create as u
     set  validated = true
     where u.user_create_id = v_user_create_id;
 
