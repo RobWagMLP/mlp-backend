@@ -30,6 +30,11 @@ request_params('UserLogin') ->
         'UserLogin'
     ];
 
+request_params('UserLogout') ->
+    [
+        'user_name'
+    ];
+
 
 request_params('UserCreate') ->
     [
@@ -86,6 +91,15 @@ request_param_info('UserLogin', 'UserLogin') ->
         source =>   body,
         rules => [
             schema,
+            required
+        ]
+    };
+
+request_param_info('UserLogout', 'user_name') ->
+    #{
+        source =>  binding ,
+        rules => [
+            {type, 'binary'},
             required
         ]
     };
@@ -170,6 +184,11 @@ validate_response('UserGet', 400, Body, ValidatorState) ->
 validate_response('UserLogin', 200, Body, ValidatorState) ->
     validate_response_body('Token', 'Token', Body, ValidatorState);
 validate_response('UserLogin', 400, Body, ValidatorState) ->
+    validate_response_body('Error', 'Error', Body, ValidatorState);
+
+validate_response('UserLogout', 200, Body, ValidatorState) ->
+    validate_response_body('', '', Body, ValidatorState);
+validate_response('UserLogout', 400, Body, ValidatorState) ->
     validate_response_body('Error', 'Error', Body, ValidatorState);
 
 

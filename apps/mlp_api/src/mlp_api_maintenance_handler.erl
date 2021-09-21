@@ -62,6 +62,14 @@ allowed_methods(
 ) ->
     {[<<"POST">>], Req, State};
 
+allowed_methods(
+    Req,
+    State = #state{
+        operation_id = 'UserLogout'
+    }
+) ->
+    {[<<"GET">>], Req, State};
+
 allowed_methods(Req, State) ->
     {[], Req, State}.
 
@@ -78,14 +86,24 @@ is_authorized(
         logic_handler = LogicHandler
     }
 ) ->
-    {true, Req0, State};
+   {true, Req0, State};
 is_authorized(
     Req0,
     State = #state{
         operation_id = 'UserLogin' = OperationID,
         logic_handler = LogicHandler
     }
-) ->  {true, Req0, State}.
+)->
+  {true, Req0, State};
+
+is_authorized(
+    Req0,
+    State = #state{
+        operation_id = 'UserLogout' = OperationID,
+        logic_handler = LogicHandler
+    }
+)->
+  {true, Req0, State}.
 
 -spec content_types_accepted(Req :: cowboy_req:req(), State :: state()) ->
     {
@@ -116,6 +134,16 @@ valid_content_headers(
     Req0,
     State = #state{
         operation_id = 'UserLogin'
+    }
+) ->
+    Headers = [],
+    {Result, Req} = validate_headers(Headers, Req0),
+    {Result, Req, State};
+
+valid_content_headers(
+    Req0,
+    State = #state{
+        operation_id = 'UserLogout'
     }
 ) ->
     Headers = [],

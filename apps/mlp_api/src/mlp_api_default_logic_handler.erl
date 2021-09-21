@@ -54,6 +54,10 @@ handle_request('UserLogin', Context, #{'UserLogin' := #{<<"user_name">> := UserN
         {error, ErrorCode,ErrorText}    -> {400,#{},#{error_code => ErrorCode,error_text => ErrorText}}
         end;
 
+handle_request('UserLogout', Context, #{user_name := _UserName} ) ->
+    [Cookie, _] = create_cookie_and_token(exp_free),
+    {200, #{<<"Set-Cookie">> => Cookie}, #{result => ok}};
+
 
 handle_request(OperationID, Req, Context) ->
     error_logger:error_msg(

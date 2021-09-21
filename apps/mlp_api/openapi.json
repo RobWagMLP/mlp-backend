@@ -129,6 +129,46 @@
         }
       }
     },
+    "/user/{user_name}/logout": {
+      "get": {
+        "parameters": [
+          {
+            "name": "user_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "get person data",
+        "description": "get the persons data using current credentials",
+        "operationId": "user_logout",
+        "tags": [
+          "maintenance"
+        ],
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/signup_user": {
       "post": {
         "summary": "create a person",

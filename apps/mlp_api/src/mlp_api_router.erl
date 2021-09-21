@@ -70,6 +70,11 @@ get_operations() ->
             method => <<"POST">>,
             handler => 'mlp_api_maintenance_handler'
         },
+        'UserLogout' => #{
+            path => "/mlp_backend/user/:user_name/logout",
+            method => <<"GET">>,
+            handler => 'mlp_api_maintenance_handler'
+        },
         'UserCreate' => #{
             path => "/mlp_backend/user/signup_user",
             method => <<"POST">>,

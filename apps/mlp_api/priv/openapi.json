@@ -116,6 +116,42 @@
         "x-user_role" : [ "customer" ]
       }
     },
+    "/user/{user_name}/logout" : {
+      "get" : {
+        "description" : "get the persons data using current credentials",
+        "operationId" : "user_logout",
+        "parameters" : [ {
+          "explode" : false,
+          "in" : "path",
+          "name" : "user_name",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "ok"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            },
+            "description" : "unexpected error"
+          }
+        },
+        "security" : [ {
+          "bearer_auth" : [ ]
+        } ],
+        "summary" : "get person data",
+        "tags" : [ "maintenance" ]
+      }
+    },
     "/user/signup_user" : {
       "post" : {
         "description" : "create a person using name, given name in the body and email address/password in basic auth header. this email address will receive a mail to activate the account.",
