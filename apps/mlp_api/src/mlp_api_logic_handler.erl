@@ -43,8 +43,8 @@ handleAuth(#{ headers := #{ <<"authorization">> := Bearer } }, OperationID, Cont
         _            -> handle_jwt(null, OperationID, null )
     end;
 
-handleAuth(#{ headers := #{ <<"cookie">> := Cookie } }, OperationID, Context ) ->
-    Cookies = string:split(Cookie, ";"),
+handleAuth(#{ headers := #{ <<"cookie">> := Cookie } } = Req, OperationID, Context ) ->
+    Cookies = cowboy_req:parse_cookies(Req),
     JWTStr = findCookie(Cookies),
     case JWTStr of 
         null      ->    handle_jwt(null, OperationID, null );
@@ -88,8 +88,7 @@ check_exp_date(TS, OperationID) ->
         _    -> token_expired
     end.
 
-findCookie([H | T]) ->
-    [Name, JWT] = string:split(H, "="),
+findCookie([ {Name, JWT} | T]) ->
     case Name of 
         <<"jwt">>   -> JWT;
         _           -> findCookie(T)
